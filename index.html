@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Suas tarefas</title>
+</head>
+<body>
+    <main class="container">
+        <h1>Bem vindo ao To-Do</h1>
+        <section class="blockOfContent_add">
+            <h2>Adicionar tarefas</h2>
+            <form id="formAddTask" method="post">
+                <input type="text" id="addTask" placeholder="Adicione sua tarefa aqui" required>    
+                <button type="submit" id="submitTask">Adicionar</button>
+            </form>
+        </section>
+        <section class="blockOfSearch">
+            <h2>Pesquisar tarefas</h2>
+            <input type="text" id="inputSearch">
+            <button type="submit" id="searchTask">Pesquisar</button>
+
+        </section>
+        <section class="blockOfContent_finished">
+            <h2>Tarefas finalizadas</h2>
+            <ul id="finishedTaskList-container">
+            </ul>
+        </section>
+        <section class="blockOfContent_tasks">
+            <h2>Tarefas em andamento</h2>
+            <ul id="taskList-container">
+            </ul>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
