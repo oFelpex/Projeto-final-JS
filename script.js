@@ -16,179 +16,159 @@ document.getElementById("formAddTask").addEventListener("submit", function (even
     tasks.set(taskId, addTask_value);
     addTask_input.value = '';
 
+    addTaskToDOM(taskId, addTask_value, taskListContainer, tasks, false);
+
+    taskId++;
+});
+
+function addTaskToDOM(id, taskValue, container, taskMap, isChecked) {
     let li = document.createElement("li");
-    
+    li.id = id;
+    li.setAttribute("data-id", id);
+
     let newTask = document.createElement("input");
-    newTask.value = addTask_value;
-
-    li.id = taskId;
-    li.setAttribute("data-id", taskId);
-    
-    let idNumber = document.createElement("p");
-    idNumber.innerHTML = String(li.getAttribute("data-id")) + " - ";
-    idNumber.classList.add("idNumber");
-    idNumber.id = taskId + "_ID";
-
-    li.appendChild(idNumber);
-    taskListContainer.appendChild(li);
-    
+    newTask.value = taskValue;
     newTask.classList.add("newTask");
+    newTask.disabled = isChecked;
+
     li.appendChild(newTask);
 
     let span = document.createElement("span");
     span.innerHTML = "\u00d7";
     li.appendChild(span);
 
-    const taskUpdate = newTask;
-    taskUpdate.addEventListener('input', (event) => {
+    container.appendChild(li);
+
+    // Evento para editar a tarefa
+    newTask.addEventListener('input', (event) => {
         const value = event.target.value;
-        tasks.set(Number(event.target.parentElement.getAttribute("data-id")), value);
+        taskMap.set(Number(li.getAttribute("data-id")), value);
     });
-    
-    taskId++;
-});
 
-taskListContainer.addEventListener("click", function (element) {
-    if (element.target.tagName === "LI") {
-        const selectInputOfTask = element.target.querySelector('input');
-        if (element.target.id !== "checked") {
-            let originalId = element.target.getAttribute("data-id");
-            let task = tasks.get(Number(originalId));
-            finishedTasks.set(Number(originalId), task);
-            tasks.delete(Number(originalId));
-
-            let idNumber = document.getElementById(String(originalId) + "_ID");
-            idNumber.classList.remove("idNumber");
-            idNumber.classList.add("idNumberChecked");
-
-            element.target.id = "checked";
-            selectInputOfTask.classList = "newTaskChecked";
-            selectInputOfTask.disabled = true;
-
-            let li = element.target;
-            finishedTaskListContainer.appendChild(li);
-
-        }
-    } else if (element.target.tagName === "SPAN") {
-        let originalId = element.target.parentElement.getAttribute("data-id");
+    // Evento para excluir a tarefa
+    span.addEventListener("click", function () {
+        let originalId = li.getAttribute("data-id");
         tasks.delete(Number(originalId));
         finishedTasks.delete(Number(originalId));
-        
-        element.target.parentElement.remove();
-        
-        taskId--;
-        
-        let temporaryMap = new Map();
-        let index = 0;
-        
-        taskListContainer.querySelectorAll('li').forEach(li => {
-            let currentId = Number(li.getAttribute("data-id"));
-            let taskValue = tasks.get(currentId);
-    
-            if (taskValue !== undefined) {
-                temporaryMap.set(index, taskValue);
-                li.setAttribute("data-id", index);
-                li.id = index;
-    
-                let idNumber = li.querySelector("p");
-                idNumber.innerHTML = `${index} - `;
-                idNumber.id = `${index}_ID`;
-    
-                index++;
-            }
-        });
-    
-        tasks = temporaryMap;
-
-        console.log("tasks finalizadas", finishedTasks);
-        console.log("tasks ativas", tasks);
-    }
-});
-
-finishedTaskListContainer.addEventListener("click", function (element) {
-    const selectInputOfTask = element.target.querySelector('input');
-    if (element.target.id === "checked") {
-        let originalId = element.target.getAttribute("data-id");
-        let task = finishedTasks.get(Number(originalId));
-
-        let idNumber = document.getElementById(String(originalId) + "_ID");
-        idNumber.classList.remove("idNumberChecked");
-        idNumber.classList.add("idNumber");
-
-        tasks.set(Number(originalId), task);
-        finishedTasks.delete(Number(originalId));
-
-        element.target.id = originalId;
-        selectInputOfTask.classList = "newTask";
-        selectInputOfTask.disabled = false;
-
-        let li = element.target;
-        taskListContainer.appendChild(li);
-    }
-});
-
-document.getElementById("formSearchTask").addEventListener("submit", function (event) {
-        event.preventDefault();
+        li.remove();
+        console.log("tasks atualizadas", tasks);
     });
+
+    // Evento para marcar como concluída ou desmarcar
+    li.addEventListener("click", function (element) {
+        if (element.target.tagName === "LI") {
+            if (!isChecked) {
+                markTaskAsFinished(li);
+                isChecked = true;
+            } else {
+                unmarkTaskAsFinished(li);
+                isChecked = false;
+            }
+        }
+    });
+}
+
+function markTaskAsFinished(li) {
+    let originalId = li.getAttribute("data-id");
+    let task = tasks.get(Number(originalId));
+    finishedTasks.set(Number(originalId), task);
+    tasks.delete(Number(originalId));
+
+    let input = li.querySelector("input");
+    input.classList.remove("newTask");
+    input.classList.add("newTaskChecked");
+    input.disabled = true;
+
+    li.id = "checked";
+    finishedTaskListContainer.appendChild(li);
+
+    let originalLi = taskListContainer.querySelector(`li[data-id='${originalId}']`);
+    if (originalLi) {
+        taskListContainer.removeChild(originalLi);
+    }
+}
+
+function unmarkTaskAsFinished(li) {
+    let originalId = li.getAttribute("data-id");
+    let task = finishedTasks.get(Number(originalId));
+    tasks.set(Number(originalId), task);
+    finishedTasks.delete(Number(originalId));
+
+    let input = li.querySelector("input");
+    input.classList.remove("newTaskChecked");
+    input.classList.add("newTask");
+    input.disabled = false;
+
+    li.id = originalId;
+    taskListContainer.appendChild(li);
+
+    let originalLi = finishedTaskListContainer.querySelector(`li[data-id='${originalId}']`);
+    if (originalLi) {
+        finishedTaskListContainer.removeChild(originalLi);
+    }
+}
+
 document.getElementById("formSearchTask").addEventListener("input", function (event) {
-
     const searchTerm = event.target.value.toLowerCase();
-
-    // Limpar a lista de tarefas visível
     searchTaskListContainer.innerHTML = '';
     searchFinishedTaskListContainer.innerHTML = '';
 
-    console.log(searchTerm);
-    // Filtrar e exibir as tarefas que correspondem ao termo de pesquisa
     tasks.forEach((value, key) => {
-        if (value.toLowerCase().includes(searchTerm)) {
-            let idNumber = document.createElement("p");
-            idNumber.classList.add("idNumber");
-            idNumber.id = taskId + "_ID";
-            
-            let newTask = document.createElement("input");
-            newTask.value = value;
-            
-            let li = document.createElement("li");
-            li.id = key;
-            li.setAttribute("data-id", key);
+        if (value.includes(searchTerm)) {
+            let taskLi = taskListContainer.querySelector(`li[data-id='${key}']`);
+            if (taskLi) {
+                let clonedLi = taskLi.cloneNode(true);
+                addEventListenersToClonedTask(clonedLi);
+                searchTaskListContainer.appendChild(clonedLi);
 
-            idNumber.innerHTML = String(li.getAttribute("data-id")) + " - ";
-            li.appendChild(idNumber);
-
-            newTask.classList.add("newTask");
-            li.appendChild(newTask);
-
-            searchTaskListContainer.appendChild(li);
-
-        } 
-        //RESOLVER ESSA PENDÊNCIA URGENTE
-        else if(searchTerm === '') {
-            searchTaskListContainer.innerHTML = '';
+                if (searchTerm === '') {
+                    clonedLi.remove();
+                }
+            }
         }
     });
+
     finishedTasks.forEach((value, key) => {
-        if (value.toLowerCase().includes(searchTerm)) {
-            let idNumber = document.createElement("p");
-            idNumber.classList.add("idNumberChecked");
-            idNumber.id = taskId + "_ID";
-            
-            let newTask = document.createElement("input");
-            newTask.value = value;
-            
-            let li = document.createElement("li");
-            li.id = "checked";
-            li.setAttribute("data-id", key);
+        if (value.includes(searchTerm)) {
+            let taskLi = finishedTaskListContainer.querySelector(`li[data-id='${key}']`);
+            if (taskLi) {
+                let clonedLi = taskLi.cloneNode(true);
+                addEventListenersToClonedTask(clonedLi);
+                searchFinishedTaskListContainer.appendChild(clonedLi);
 
-            idNumber.innerHTML = String(li.getAttribute("data-id")) + " - ";
-            li.appendChild(idNumber);
-
-            newTask.classList.remove("newTask");
-            newTask.classList.add("newTaskChecked");
-            li.appendChild(newTask);
-
-            searchTaskListContainer.appendChild(li);
-
+                if (searchTerm === '') {
+                    clonedLi.remove();
+                }
+            }
         }
     });
 });
+
+function addEventListenersToClonedTask(clonedLi) {
+    const newTask = clonedLi.querySelector('input');
+    const span = clonedLi.querySelector('span');
+
+    // Reaplicando eventos para edição e exclusão
+    newTask.addEventListener('input', (event) => {
+        const value = event.target.value;
+        tasks.set(Number(clonedLi.getAttribute("data-id")), value);
+    });
+
+    span.addEventListener("click", function () {
+        let originalId = clonedLi.getAttribute("data-id");
+        tasks.delete(Number(originalId));
+        finishedTasks.delete(Number(originalId));
+        clonedLi.remove();
+        console.log("tasks atualizadas", tasks);
+    });
+
+    clonedLi.addEventListener("click", function (element) {
+        if (element.target.tagName === "LI") {
+            if (clonedLi.id !== "checked") {
+                markTaskAsFinished(clonedLi);
+            } else {
+                unmarkTaskAsFinished(clonedLi);
+            }
+        }
+    });
+}

@@ -9,7 +9,7 @@
     display: grid;
     gap: 30px;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 3fr 3fr 6fr;
+    grid-template-rows: 1fr 3fr 5fr 6fr;
     width: 100%;
     min-height: 100vh;
     background-color: rgb(56, 56, 56);
@@ -81,16 +81,17 @@ h1, h2, h3 {
 .blockOfSearch {
     grid-column: 1 / span 2;
     grid-row: 3;
-    max-height: 200px;
     padding: 0px 20px 20px 20px;
     background-color: rgb(44, 44, 44);
     border-radius: 10px;
     width: 100%;
 }
 #formSearchTask {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
+}
+#formSearchTask ul {
+    grid-row: 2;
 }
 #inputSearch {
     grid-column: 1 / span 2;
@@ -149,6 +150,10 @@ ul li::before {
     font-size: 17px;
     margin-left: 5px;
 }
+.newTask{
+    width: 80%;
+}
+
 .newTaskChecked {
     text-decoration: line-through;
     color: #555;

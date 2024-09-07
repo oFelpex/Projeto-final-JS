@@ -12,14 +12,14 @@
         <section class="blockOfContent_add">
             <h2>Adicionar tarefas</h2>
             <form id="formAddTask" method="post">
-                <input type="text" id="addTask" placeholder="Adicione sua tarefa aqui" required>    
+                <input type="text" id="addTask" placeholder="Adicione sua tarefa aqui" maxlength="30" required>    
                 <button type="submit" id="submitTask">Adicionar</button>
             </form>
         </section>
         <section class="blockOfSearch">
             <h2>Pesquisar tarefas</h2>
             <form id="formSearchTask" method="post">
-                <input type="text" id="inputSearch" placeholder="Digite o nome da sua tarefa">
+                <input type="text" id="inputSearch" placeholder="Digite o nome da sua tarefa" maxlength="30">
                 <ul id="searchTaskList-container"></ul>
                 <ul id="searchFinishedTaskList-container"></ul>
             </form>
