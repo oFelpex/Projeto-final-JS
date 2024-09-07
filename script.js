@@ -1,6 +1,5 @@
 let tasks = new Map();
 let finishedTasks = new Map();
-let newTask;
 let taskId = 0;
 const TaskListContainer = document.getElementById("taskList-container");
 const finishedTaskListContainer = document.getElementById("finishedTaskList-container");
@@ -13,23 +12,19 @@ document.getElementById("formAddTask").addEventListener("submit", function (even
 
     tasks.set(taskId, addTask_value);
     addTask_input.value = '';
-    console.log("tasks ativas", tasks);
 
     let li = document.createElement("li");
     
-    newTask = document.createElement("input");
+    let newTask = document.createElement("input");
     newTask.value = addTask_value;
-    
+
     li.id = taskId;
     li.setAttribute("data-id", taskId);
     
     let idNumber = document.createElement("p");
-
     idNumber.innerHTML = String(li.getAttribute("data-id")) + " - ";
     idNumber.classList.add("idNumber");
     idNumber.id = taskId + "_ID";
-
-    console.log(idNumber);
 
     li.appendChild(idNumber);
     TaskListContainer.appendChild(li);
@@ -37,19 +32,16 @@ document.getElementById("formAddTask").addEventListener("submit", function (even
     newTask.classList.add("newTask");
     li.appendChild(newTask);
 
-    //criar o x
     let span = document.createElement("span");
     span.innerHTML = "\u00d7";
     li.appendChild(span);
 
-    const taskUpdate = document.querySelector(".newTask");
+    const taskUpdate = newTask;
     taskUpdate.addEventListener('input', (event) => {
         const value = event.target.value;
-        tasks.set(Number(event.target.id), value);
-        console.log("tasks ativas", tasks);
+        tasks.set(Number(event.target.parentElement.getAttribute("data-id")), value);
     });
     
-    console.log("task id ", taskId);
     taskId++;
 });
 
@@ -73,17 +65,17 @@ TaskListContainer.addEventListener("click", function (element) {
             let li = element.target;
             finishedTaskListContainer.appendChild(li);
 
-
-            console.log("tasks finalizadas", finishedTasks);
-            console.log("tasks ativas", tasks);
-
         }
     } else if (element.target.tagName === "SPAN") {
         let originalId = element.target.parentElement.getAttribute("data-id");
         tasks.delete(Number(originalId));
         finishedTasks.delete(Number(originalId));
-
+        
         element.target.parentElement.remove();
+        
+        taskId--;
+        
+        updateIds();
 
         console.log("tasks finalizadas", finishedTasks);
         console.log("tasks ativas", tasks);
@@ -106,13 +98,32 @@ finishedTaskListContainer.addEventListener("click", function (element) {
         element.target.id = originalId;
         selectInputOfTask.classList = "newTask";
         selectInputOfTask.disabled = false;
-        
-        console.log("tasks finalizadas", finishedTasks);
-        console.log("tasks ativas", tasks);
-        console.log()
-        
+
         let li = element.target;
         TaskListContainer.appendChild(li);
     }
 });
 
+function updateIds() {
+    let temporaryMap = new Map();
+    let index = 0;
+    
+    TaskListContainer.querySelectorAll('li').forEach(li => {
+        let currentId = Number(li.getAttribute("data-id"));
+        let taskValue = tasks.get(currentId);
+
+        if (taskValue !== undefined) {
+            temporaryMap.set(index, taskValue);
+            li.setAttribute("data-id", index);
+            li.id = index;
+
+            let idNumber = li.querySelector("p");
+            idNumber.innerHTML = `${index} - `;
+            idNumber.id = `${index}_ID`;
+
+            index++;
+        }
+    });
+
+    tasks = temporaryMap;
+}
