@@ -55,7 +55,7 @@ h1, h2, h3 {
     background-color: rgb(44, 44, 44);
     border-radius: 10px;
 }
-#formAddTask {
+#formAddTask  {
     display: flex;
     flex-direction: column;
 }
@@ -67,7 +67,7 @@ h1, h2, h3 {
     font-size: 16px;
     font-weight: 14px;
 }
-#submitTask, #searchTask {
+#submitTask {
     border: none;
     outline: none;
     padding: 16px 50px;
@@ -77,21 +77,24 @@ h1, h2, h3 {
     cursor: pointer;
     border-radius: 40px;
 }
-#searchTask{
-    background: #2980b9;
 
-}
 .blockOfSearch {
-    display: flex;
-    flex-direction: column;
-    max-height: 200px;
-    grid-row: 3;
     grid-column: 1 / span 2;
+    grid-row: 3;
+    max-height: 200px;
     padding: 0px 20px 20px 20px;
     background-color: rgb(44, 44, 44);
     border-radius: 10px;
+    width: 100%;
+}
+#formSearchTask {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
 }
 #inputSearch {
+    grid-column: 1 / span 2;
+    grid-row: 1;
     padding: 10px;
     margin-bottom: 20px;
     height: 2.5rem;
@@ -100,7 +103,14 @@ h1, h2, h3 {
     font-weight: 14px;
     width: 100%;
 }
-
+#searchTaskList-container {    
+    grid-row: 2;
+    grid-column: 1;
+}
+#searchFinishedTaskList-container {    
+    grid-row: 2;
+    grid-column: 2;
+}
 ul li {
     display: flex;
     list-style: none;
@@ -131,7 +141,7 @@ ul li::before {
     top: 12px;
     left: 8px;
 }
-.newTask {
+.newTask, li {
     color: rgb(220, 220, 220);
     background: none;
     outline: none;

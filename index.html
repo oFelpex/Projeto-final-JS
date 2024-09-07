@@ -18,9 +18,11 @@
         </section>
         <section class="blockOfSearch">
             <h2>Pesquisar tarefas</h2>
-            <input type="text" id="inputSearch">
-            <button type="submit" id="searchTask">Pesquisar</button>
-
+            <form id="formSearchTask" method="post">
+                <input type="text" id="inputSearch" placeholder="Digite o nome da sua tarefa">
+                <ul id="searchTaskList-container"></ul>
+                <ul id="searchFinishedTaskList-container"></ul>
+            </form>
         </section>
         <section class="blockOfContent_finished">
             <h2>Tarefas finalizadas</h2>

@@ -1,8 +1,11 @@
 let tasks = new Map();
 let finishedTasks = new Map();
 let taskId = 0;
-const TaskListContainer = document.getElementById("taskList-container");
+const taskListContainer = document.getElementById("taskList-container");
 const finishedTaskListContainer = document.getElementById("finishedTaskList-container");
+
+const searchTaskListContainer = document.getElementById("searchTaskList-container");
+const searchFinishedTaskListContainer = document.getElementById("searchFinishedTaskList-container");
 
 document.getElementById("formAddTask").addEventListener("submit", function (event) {
     event.preventDefault();
@@ -27,7 +30,7 @@ document.getElementById("formAddTask").addEventListener("submit", function (even
     idNumber.id = taskId + "_ID";
 
     li.appendChild(idNumber);
-    TaskListContainer.appendChild(li);
+    taskListContainer.appendChild(li);
     
     newTask.classList.add("newTask");
     li.appendChild(newTask);
@@ -45,7 +48,7 @@ document.getElementById("formAddTask").addEventListener("submit", function (even
     taskId++;
 });
 
-TaskListContainer.addEventListener("click", function (element) {
+taskListContainer.addEventListener("click", function (element) {
     if (element.target.tagName === "LI") {
         const selectInputOfTask = element.target.querySelector('input');
         if (element.target.id !== "checked") {
@@ -75,7 +78,27 @@ TaskListContainer.addEventListener("click", function (element) {
         
         taskId--;
         
-        updateIds();
+        let temporaryMap = new Map();
+        let index = 0;
+        
+        taskListContainer.querySelectorAll('li').forEach(li => {
+            let currentId = Number(li.getAttribute("data-id"));
+            let taskValue = tasks.get(currentId);
+    
+            if (taskValue !== undefined) {
+                temporaryMap.set(index, taskValue);
+                li.setAttribute("data-id", index);
+                li.id = index;
+    
+                let idNumber = li.querySelector("p");
+                idNumber.innerHTML = `${index} - `;
+                idNumber.id = `${index}_ID`;
+    
+                index++;
+            }
+        });
+    
+        tasks = temporaryMap;
 
         console.log("tasks finalizadas", finishedTasks);
         console.log("tasks ativas", tasks);
@@ -100,30 +123,72 @@ finishedTaskListContainer.addEventListener("click", function (element) {
         selectInputOfTask.disabled = false;
 
         let li = element.target;
-        TaskListContainer.appendChild(li);
+        taskListContainer.appendChild(li);
     }
 });
 
-function updateIds() {
-    let temporaryMap = new Map();
-    let index = 0;
-    
-    TaskListContainer.querySelectorAll('li').forEach(li => {
-        let currentId = Number(li.getAttribute("data-id"));
-        let taskValue = tasks.get(currentId);
+document.getElementById("formSearchTask").addEventListener("submit", function (event) {
+        event.preventDefault();
+    });
+document.getElementById("formSearchTask").addEventListener("input", function (event) {
 
-        if (taskValue !== undefined) {
-            temporaryMap.set(index, taskValue);
-            li.setAttribute("data-id", index);
-            li.id = index;
+    const searchTerm = event.target.value.toLowerCase();
 
-            let idNumber = li.querySelector("p");
-            idNumber.innerHTML = `${index} - `;
-            idNumber.id = `${index}_ID`;
+    // Limpar a lista de tarefas visível
+    searchTaskListContainer.innerHTML = '';
+    searchFinishedTaskListContainer.innerHTML = '';
 
-            index++;
+    console.log(searchTerm);
+    // Filtrar e exibir as tarefas que correspondem ao termo de pesquisa
+    tasks.forEach((value, key) => {
+        if (value.toLowerCase().includes(searchTerm)) {
+            let idNumber = document.createElement("p");
+            idNumber.classList.add("idNumber");
+            idNumber.id = taskId + "_ID";
+            
+            let newTask = document.createElement("input");
+            newTask.value = value;
+            
+            let li = document.createElement("li");
+            li.id = key;
+            li.setAttribute("data-id", key);
+
+            idNumber.innerHTML = String(li.getAttribute("data-id")) + " - ";
+            li.appendChild(idNumber);
+
+            newTask.classList.add("newTask");
+            li.appendChild(newTask);
+
+            searchTaskListContainer.appendChild(li);
+
+        } 
+        //RESOLVER ESSA PENDÊNCIA URGENTE
+        else if(searchTerm === '') {
+            searchTaskListContainer.innerHTML = '';
         }
     });
+    finishedTasks.forEach((value, key) => {
+        if (value.toLowerCase().includes(searchTerm)) {
+            let idNumber = document.createElement("p");
+            idNumber.classList.add("idNumberChecked");
+            idNumber.id = taskId + "_ID";
+            
+            let newTask = document.createElement("input");
+            newTask.value = value;
+            
+            let li = document.createElement("li");
+            li.id = "checked";
+            li.setAttribute("data-id", key);
 
-    tasks = temporaryMap;
-}
+            idNumber.innerHTML = String(li.getAttribute("data-id")) + " - ";
+            li.appendChild(idNumber);
+
+            newTask.classList.remove("newTask");
+            newTask.classList.add("newTaskChecked");
+            li.appendChild(newTask);
+
+            searchTaskListContainer.appendChild(li);
+
+        }
+    });
+});
