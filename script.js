@@ -136,37 +136,36 @@ document.getElementById("formSearchTask").addEventListener("submit", function (e
 });
 document.getElementById("inputSearch").addEventListener("input", function (event) {
     const searchTerm = event.target.value.toLowerCase();
+    
+    // Limpa a área de pesquisa
     searchTaskListContainer.innerHTML = '';
     searchFinishedTaskListContainer.innerHTML = '';
 
+    // Filtra tarefas em andamento
     tasks.forEach((value, key) => {
-        if (value.includes(searchTerm)) {
-            let taskLi = taskListContainer.querySelector(`li[data-id='${key}']`);
-            if (taskLi) {
-                let clonedLi = taskLi.cloneNode(true);
-                addEventListenersToClonedTask(clonedLi);
-                searchTaskListContainer.appendChild(clonedLi);
-                if (searchTerm === '') {
-                    clonedLi.remove();
-                }
+        let taskLi = taskListContainer.querySelector(`li[data-id='${key}']`);
+        if (taskLi) {
+            if (value.toLowerCase().includes(searchTerm)) {
+                taskLi.style.display = ""; // Mostra a tarefa
+            } else {
+                taskLi.style.display = "none"; // Oculta a tarefa
             }
         }
     });
 
+    // Filtra tarefas concluídas
     finishedTasks.forEach((value, key) => {
-        if (value.includes(searchTerm)) {
-            let taskLi = finishedTaskListContainer.querySelector(`li[data-id='${key}']`);
-            if (taskLi) {
-                let clonedLi = taskLi.cloneNode(true);
-                addEventListenersToClonedTask(clonedLi);
-                searchFinishedTaskListContainer.appendChild(clonedLi);
-                if (searchTerm === '') {
-                    clonedLi.remove();
-                }
+        let finishedLi = finishedTaskListContainer.querySelector(`li[data-id='${key}']`);
+        if (finishedLi) {
+            if (value.toLowerCase().includes(searchTerm)) {
+                finishedLi.style.display = ""; // Mostra a tarefa
+            } else {
+                finishedLi.style.display = "none"; // Oculta a tarefa
             }
         }
     });
 });
+
 
 function addEventListenersToClonedTask(clonedLi) {
     const newTask = clonedLi.querySelector('input');
