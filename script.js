@@ -1,23 +1,19 @@
 let tasks = new Map();
 let finishedTasks = new Map();
 let taskId = 0;
+
 const taskListContainer = document.getElementById("taskList-container");
 const finishedTaskListContainer = document.getElementById("finishedTaskList-container");
-
 const searchTaskListContainer = document.getElementById("searchTaskList-container");
 const searchFinishedTaskListContainer = document.getElementById("searchFinishedTaskList-container");
 
 document.getElementById("formAddTask").addEventListener("submit", function (event) {
     event.preventDefault();
-
     const addTask_input = document.getElementById("addTask");
     const addTask_value = addTask_input.value;
-
     tasks.set(taskId, addTask_value);
     addTask_input.value = '';
-
     addTaskToDOM(taskId, addTask_value, taskListContainer, tasks, false);
-
     taskId++;
 });
 
@@ -39,22 +35,25 @@ function addTaskToDOM(id, taskValue, container, taskMap, isChecked) {
 
     container.appendChild(li);
 
-    // Evento para editar a tarefa
+    //editar a tarefa
     newTask.addEventListener('input', (event) => {
         const value = event.target.value;
         taskMap.set(Number(li.getAttribute("data-id")), value);
     });
 
-    // Evento para excluir a tarefa
+    //excluir a tarefa
     span.addEventListener("click", function () {
         let originalId = li.getAttribute("data-id");
         tasks.delete(Number(originalId));
         finishedTasks.delete(Number(originalId));
         li.remove();
+        //remove da pesquisa
+        searchTaskListContainer.querySelector(`li[data-id='${originalId}']`)?.remove();
+        searchFinishedTaskListContainer.querySelector(`li[data-id='${originalId}']`)?.remove();
         console.log("tasks atualizadas", tasks);
     });
 
-    // Evento para marcar como concluída ou desmarcar
+    //marcar como concluída ou não concluida
     li.addEventListener("click", function (element) {
         if (element.target.tagName === "LI") {
             if (!isChecked) {
@@ -82,6 +81,18 @@ function markTaskAsFinished(li) {
     li.id = "checked";
     finishedTaskListContainer.appendChild(li);
 
+    //verifica e atualiza na pesquisa
+    let clonedLi = searchTaskListContainer.querySelector(`li[data-id='${originalId}']`);
+    if (clonedLi) {
+        let clonedInput = clonedLi.querySelector('input');
+        clonedInput.classList.remove("newTask");
+        clonedInput.classList.add("newTaskChecked");
+        clonedInput.disabled = true;
+        clonedLi.id = "checked";
+        searchFinishedTaskListContainer.appendChild(clonedLi);
+    }
+
+    //remove da lista de tarefas não finalizadas
     let originalLi = taskListContainer.querySelector(`li[data-id='${originalId}']`);
     if (originalLi) {
         taskListContainer.removeChild(originalLi);
@@ -102,13 +113,28 @@ function unmarkTaskAsFinished(li) {
     li.id = originalId;
     taskListContainer.appendChild(li);
 
+    //verifica e atualiza na pesquisa
+    let clonedLi = searchFinishedTaskListContainer.querySelector(`li[data-id='${originalId}']`);
+    if (clonedLi) {
+        let clonedInput = clonedLi.querySelector('input');
+        clonedInput.classList.remove("newTaskChecked");
+        clonedInput.classList.add("newTask");
+        clonedInput.disabled = false;
+        clonedLi.id = originalId;
+        searchTaskListContainer.appendChild(clonedLi);
+    }
+
+    //remove da lista de tarefas finalizadas
     let originalLi = finishedTaskListContainer.querySelector(`li[data-id='${originalId}']`);
     if (originalLi) {
         finishedTaskListContainer.removeChild(originalLi);
     }
 }
 
-document.getElementById("formSearchTask").addEventListener("input", function (event) {
+document.getElementById("formSearchTask").addEventListener("submit", function (event) {
+    event.preventDefault();
+});
+document.getElementById("inputSearch").addEventListener("input", function (event) {
     const searchTerm = event.target.value.toLowerCase();
     searchTaskListContainer.innerHTML = '';
     searchFinishedTaskListContainer.innerHTML = '';
@@ -120,7 +146,6 @@ document.getElementById("formSearchTask").addEventListener("input", function (ev
                 let clonedLi = taskLi.cloneNode(true);
                 addEventListenersToClonedTask(clonedLi);
                 searchTaskListContainer.appendChild(clonedLi);
-
                 if (searchTerm === '') {
                     clonedLi.remove();
                 }
@@ -135,7 +160,6 @@ document.getElementById("formSearchTask").addEventListener("input", function (ev
                 let clonedLi = taskLi.cloneNode(true);
                 addEventListenersToClonedTask(clonedLi);
                 searchFinishedTaskListContainer.appendChild(clonedLi);
-
                 if (searchTerm === '') {
                     clonedLi.remove();
                 }
@@ -146,20 +170,45 @@ document.getElementById("formSearchTask").addEventListener("input", function (ev
 
 function addEventListenersToClonedTask(clonedLi) {
     const newTask = clonedLi.querySelector('input');
+    const originalTask = document.querySelector(`li[data-id='${clonedLi.getAttribute("data-id")}'] input`);
     const span = clonedLi.querySelector('span');
 
-    // Reaplicando eventos para edição e exclusão
+    //edição da task
     newTask.addEventListener('input', (event) => {
         const value = event.target.value;
-        tasks.set(Number(clonedLi.getAttribute("data-id")), value);
+        const taskId = Number(clonedLi.getAttribute("data-id"));
+        
+        //atualiza a task no map
+        if (tasks.has(taskId)) {
+            tasks.set(taskId, value);
+        } else if (finishedTasks.has(taskId)) {
+            finishedTasks.set(taskId, value);
+        }
+
+        //atualiza a task que está fora do bloco de pesquisa
+        if (originalTask) {
+            originalTask.value = value;
+        }
     });
 
+    //para excluir a task
     span.addEventListener("click", function () {
         let originalId = clonedLi.getAttribute("data-id");
+
         tasks.delete(Number(originalId));
         finishedTasks.delete(Number(originalId));
+
+        let taskUnchecked = taskListContainer.querySelector(`li[data-id='${originalId}']`);
+        if (taskUnchecked) {
+            taskUnchecked.remove();
+        }
+
+        let taskChecked = finishedTaskListContainer.querySelector(`li[data-id='${originalId}']`);
+        if (taskChecked) {
+            taskChecked.remove();
+        }
+
         clonedLi.remove();
-        console.log("tasks atualizadas", tasks);
     });
 
     clonedLi.addEventListener("click", function (element) {
@@ -172,3 +221,4 @@ function addEventListenersToClonedTask(clonedLi) {
         }
     });
 }
+
