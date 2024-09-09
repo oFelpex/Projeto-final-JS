@@ -25,47 +25,58 @@ function addTaskToDOM(id, taskValue, container, taskMap) {
 
     let newTask = document.createElement("input");
     newTask.value = taskValue;
-    newTask.classList.add("newTask");
-    newTask.disabled = isChecked;
+    if(newTask.value.trim() === "")
+    {
+        alert("Adicione um nome para a sua tarefa!");
+    } else {
 
-    li.appendChild(newTask);
-
-    let span = document.createElement("span");
-    span.innerHTML = "\u00d7";
-    li.appendChild(span);
-
-    container.appendChild(li);
-
-    //editar a tarefa
-    newTask.addEventListener('input', (event) => {
-        const value = event.target.value;
-        taskMap.set(Number(li.getAttribute("data-id")), value);
-    });
-
-    //excluir a tarefa
-    span.addEventListener("click", function () {
-        let originalId = li.getAttribute("data-id");
-        tasks.delete(Number(originalId));
-        finishedTasks.delete(Number(originalId));
-        li.remove();
-        //remove da pesquisa
-        searchTaskListContainer.querySelector(`li[data-id='${originalId}']`)?.remove();
-        searchFinishedTaskListContainer.querySelector(`li[data-id='${originalId}']`)?.remove();
-        console.log("tasks atualizadas", tasks);
-    });
-
-    //marcar como concluída ou não concluida
-    li.addEventListener("click", function (element) {
-        if (element.target.tagName === "LI") {
-            if (!isChecked) {
-                markTaskAsFinished(li);
-                isChecked = true;
+        newTask.classList.add("newTask");
+        newTask.disabled = isChecked;
+    
+        li.appendChild(newTask);
+    
+        let span = document.createElement("span");
+        span.innerHTML = "\u00d7";
+        li.appendChild(span);
+    
+        container.appendChild(li);
+    
+        //editar a tarefa
+        newTask.addEventListener('input', (event) => {
+            const value = event.target.value;
+            if(event.target.value.trim() === "") {
+                alert("Adicione um nome a sua tarefa!");
+                event.target.value = "Sem nome";
             } else {
-                unmarkTaskAsFinished(li);
-                isChecked = false;
+                taskMap.set(Number(li.getAttribute("data-id")), value);
             }
-        }
-    });
+        });
+    
+        //excluir a tarefa
+        span.addEventListener("click", function () {
+            let originalId = li.getAttribute("data-id");
+            tasks.delete(Number(originalId));
+            finishedTasks.delete(Number(originalId));
+            li.remove();
+            //remove da pesquisa
+            searchTaskListContainer.querySelector(`li[data-id='${originalId}']`)?.remove();
+            searchFinishedTaskListContainer.querySelector(`li[data-id='${originalId}']`)?.remove();
+            console.log("tasks atualizadas", tasks);
+        });
+    
+        //marcar como concluída ou não concluida
+        li.addEventListener("click", function (element) {
+            if (element.target.tagName === "LI") {
+                if (!isChecked) {
+                    markTaskAsFinished(li);
+                    isChecked = true;
+                } else {
+                    unmarkTaskAsFinished(li);
+                    isChecked = false;
+                }
+            }
+        });
+    }
 }
 
 function markTaskAsFinished(li) {
@@ -138,11 +149,11 @@ document.getElementById("formSearchTask").addEventListener("submit", function (e
 document.getElementById("inputSearch").addEventListener("input", function (event) {
     const searchTerm = event.target.value.toLowerCase();
     
-    // Limpa a área de pesquisa
+    //limpa a área de pesquisa pra não ficar duplicado
     searchTaskListContainer.innerHTML = '';
     searchFinishedTaskListContainer.innerHTML = '';
 
-    // Filtra tarefas em andamento
+    //mostra as tarefas em andamento
     tasks.forEach((value, key) => {
         let taskLi = taskListContainer.querySelector(`li[data-id='${key}']`);
         if (taskLi) {
@@ -154,14 +165,14 @@ document.getElementById("inputSearch").addEventListener("input", function (event
         }
     });
 
-    // Filtra tarefas concluídas
+    //mostra as tarefas concluídas
     finishedTasks.forEach((value, key) => {
         let finishedLi = finishedTaskListContainer.querySelector(`li[data-id='${key}']`);
         if (finishedLi) {
             if (value.toLowerCase().includes(searchTerm)) {
-                finishedLi.style.display = ""; // Mostra a tarefa
+                finishedLi.style.display = ""; //mostra a tarefa
             } else {
-                finishedLi.style.display = "none"; // Oculta a tarefa
+                finishedLi.style.display = "none"; //esconde a tarefa
             }
         }
     });
