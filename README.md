@@ -27,11 +27,11 @@ Este projeto foi desenvolvido por um grupo de estudantes da **ADA** durante o m�
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/seu-repositorio.git
+   git clone https://github.com/juliano340/projeto-final-JS-mesmo
    ```
 2. Navegue até o diretório do projeto:
    ```bash
-   cd seu-repositorio
+   cd projeto-final-JS-mesmo
    ```
 3. Abra o arquivo `index.html` em seu navegador.
 
@@ -50,7 +50,7 @@ Este projeto foi desenvolvido por:
 
 - **Juliano Pereira** - [juliano340@gmail.com](mailto:juliano340@gmail.com)
 - **Felipe Costa da Silva** - [felipe95176@gmail.com](mailto:felipe95176@gmail.com)
-- **Lucas Silva** - lucas45650@gmail.com
+- **Lucas Silva** - [lucas45650@gmail.com](mailto:lucas45650@gmail.com)
 - **Raiza**
 
 ## Como Contribuir

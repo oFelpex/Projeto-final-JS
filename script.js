@@ -13,11 +13,12 @@ document.getElementById("formAddTask").addEventListener("submit", function (even
     const addTask_value = addTask_input.value;
     tasks.set(taskId, addTask_value);
     addTask_input.value = '';
-    addTaskToDOM(taskId, addTask_value, taskListContainer, tasks, false);
+    addTaskToDOM(taskId, addTask_value, taskListContainer, tasks);
     taskId++;
 });
 
-function addTaskToDOM(id, taskValue, container, taskMap, isChecked) {
+function addTaskToDOM(id, taskValue, container, taskMap) {
+    let isChecked = false;
     let li = document.createElement("li");
     li.id = id;
     li.setAttribute("data-id", id);
@@ -165,59 +166,4 @@ document.getElementById("inputSearch").addEventListener("input", function (event
         }
     });
 });
-
-
-function addEventListenersToClonedTask(clonedLi) {
-    const newTask = clonedLi.querySelector('input');
-    const originalTask = document.querySelector(`li[data-id='${clonedLi.getAttribute("data-id")}'] input`);
-    const span = clonedLi.querySelector('span');
-
-    //edição da task
-    newTask.addEventListener('input', (event) => {
-        const value = event.target.value;
-        const taskId = Number(clonedLi.getAttribute("data-id"));
-        
-        //atualiza a task no map
-        if (tasks.has(taskId)) {
-            tasks.set(taskId, value);
-        } else if (finishedTasks.has(taskId)) {
-            finishedTasks.set(taskId, value);
-        }
-
-        //atualiza a task que está fora do bloco de pesquisa
-        if (originalTask) {
-            originalTask.value = value;
-        }
-    });
-
-    //para excluir a task
-    span.addEventListener("click", function () {
-        let originalId = clonedLi.getAttribute("data-id");
-
-        tasks.delete(Number(originalId));
-        finishedTasks.delete(Number(originalId));
-
-        let taskUnchecked = taskListContainer.querySelector(`li[data-id='${originalId}']`);
-        if (taskUnchecked) {
-            taskUnchecked.remove();
-        }
-
-        let taskChecked = finishedTaskListContainer.querySelector(`li[data-id='${originalId}']`);
-        if (taskChecked) {
-            taskChecked.remove();
-        }
-
-        clonedLi.remove();
-    });
-
-    clonedLi.addEventListener("click", function (element) {
-        if (element.target.tagName === "LI") {
-            if (clonedLi.id !== "checked") {
-                markTaskAsFinished(clonedLi);
-            } else {
-                unmarkTaskAsFinished(clonedLi);
-            }
-        }
-    });
-}
 
