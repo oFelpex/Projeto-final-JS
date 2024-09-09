@@ -49,7 +49,7 @@ O layout foi ajustado para se adaptar a diferentes dispositivos. Em dispositivos
 Este projeto foi desenvolvido por:
 
 - **Juliano Pereira** - [juliano340@gmail.com](mailto:juliano340@gmail.com)
-- **Felipe**
+- **Felipe Costa da Silva** - [felipe95176@gmail.com](mailto:felipe95176@gmail.com)
 - **Lucas**
 - **Raiza**
 
