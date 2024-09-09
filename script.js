@@ -83,14 +83,14 @@ function markTaskAsFinished(li) {
     finishedTaskListContainer.appendChild(li);
 
     //verifica e atualiza na pesquisa
-    let clonedLi = searchTaskListContainer.querySelector(`li[data-id='${originalId}']`);
-    if (clonedLi) {
-        let clonedInput = clonedLi.querySelector('input');
-        clonedInput.classList.remove("newTask");
-        clonedInput.classList.add("newTaskChecked");
-        clonedInput.disabled = true;
-        clonedLi.id = "checked";
-        searchFinishedTaskListContainer.appendChild(clonedLi);
+    let taskSearch = searchTaskListContainer.querySelector(`li[data-id='${originalId}']`);
+    if (taskSearch) {
+        let taskSearchInput = taskSearch.querySelector('input');
+        taskSearchInput.classList.remove("newTask");
+        taskSearchInput.classList.add("newTaskChecked");
+        taskSearchInput.disabled = true;
+        taskSearch.id = "checked";
+        searchFinishedTaskListContainer.appendChild(taskSearch);
     }
 
     //remove da lista de tarefas não finalizadas
@@ -115,14 +115,14 @@ function unmarkTaskAsFinished(li) {
     taskListContainer.appendChild(li);
 
     //verifica e atualiza na pesquisa
-    let clonedLi = searchFinishedTaskListContainer.querySelector(`li[data-id='${originalId}']`);
-    if (clonedLi) {
-        let clonedInput = clonedLi.querySelector('input');
-        clonedInput.classList.remove("newTaskChecked");
-        clonedInput.classList.add("newTask");
-        clonedInput.disabled = false;
-        clonedLi.id = originalId;
-        searchTaskListContainer.appendChild(clonedLi);
+    let taskSearch = searchFinishedTaskListContainer.querySelector(`li[data-id='${originalId}']`);
+    if (taskSearch) {
+        let taskSearchInput = taskSearch.querySelector('input');
+        taskSearchInput.classList.remove("newTaskChecked");
+        taskSearchInput.classList.add("newTask");
+        taskSearchInput.disabled = false;
+        taskSearch.id = originalId;
+        searchTaskListContainer.appendChild(taskSearch);
     }
 
     //remove da lista de tarefas finalizadas
